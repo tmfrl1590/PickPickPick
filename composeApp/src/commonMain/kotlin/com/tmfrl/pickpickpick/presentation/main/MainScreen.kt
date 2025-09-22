@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
+import com.tmfrl.pickpickpick.ContextFactory
 import com.tmfrl.pickpickpick.design.AppColors
 import com.tmfrl.pickpickpick.design.Language
 import com.tmfrl.pickpickpick.design.LanguageProvider
@@ -24,6 +25,7 @@ import com.tmfrl.pickpickpick.presentation.settings.SettingsScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
+    platformContext: ContextFactory,
     isDarkTheme: Boolean = false,
     onThemeChanged: (Boolean) -> Unit = {},
     isVibrationEnabled: Boolean = true,
@@ -106,6 +108,7 @@ fun MainScreen(
                         )
                     )
 
+
                     NavigationBarItem(
                         selected = selectedTab == 3,
                         onClick = { selectedTab = 3 },
@@ -157,6 +160,7 @@ fun MainScreen(
             ) {
                 when (selectedTab) {
                     0 -> SpinningWheelGameScreen(
+                        platformContext = platformContext,
                         isDarkTheme = isDarkTheme,
                         isVibrationEnabled = isVibrationEnabled
                     )
@@ -172,6 +176,7 @@ fun MainScreen(
                     )
 
                     3 -> LotteryGameScreen(
+                        platformContext = platformContext,
                         isDarkTheme = isDarkTheme,
                         isVibrationEnabled = isVibrationEnabled
                     )

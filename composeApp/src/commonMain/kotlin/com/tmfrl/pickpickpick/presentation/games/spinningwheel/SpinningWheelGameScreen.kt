@@ -25,12 +25,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -44,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.TextMeasurer
@@ -64,9 +58,20 @@ import com.tmfrl.pickpickpick.design.InfoCard
 import com.tmfrl.pickpickpick.design.SettingsHeader
 import com.tmfrl.pickpickpick.design.ThemeColors
 import com.tmfrl.pickpickpick.platform.rememberVibrationProvider
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.TextStyle
+import app.lexilabs.basic.ads.AdState
+import app.lexilabs.basic.ads.DependsOnGoogleMobileAds
+import app.lexilabs.basic.ads.DependsOnGoogleUserMessagingPlatform
+import app.lexilabs.basic.ads.composable.ConsentPopup
+import app.lexilabs.basic.ads.composable.InterstitialAd
+import app.lexilabs.basic.ads.composable.RewardedAd
+import app.lexilabs.basic.ads.composable.rememberConsent
+import app.lexilabs.basic.ads.composable.rememberInterstitialAd
+import app.lexilabs.basic.ads.composable.rememberRewardedAd
+import app.lexilabs.basic.logging.Log
+import com.tmfrl.pickpickpick.ContextFactory
 import kotlin.random.Random
 import com.tmfrl.pickpickpick.design.strings
 
@@ -74,11 +79,16 @@ import com.tmfrl.pickpickpick.design.strings
  * 돌림판 게임 화면
  * 시작 버튼을 누르면 돌림판이 회전하고 선택지를 선택합니다.
  */
+@OptIn(DependsOnGoogleUserMessagingPlatform::class, DependsOnGoogleMobileAds::class)
 @Composable
 fun SpinningWheelGameScreen(
+    platformContext: ContextFactory,
     isDarkTheme: Boolean = false,
     isVibrationEnabled: Boolean = true
 ) {
+    val consent by rememberConsent(activity = platformContext.getActivity())
+    val interstitialAd by rememberInterstitialAd(activity = platformContext.getActivity())
+    var showInterstitialAd by remember { mutableStateOf(false) }
     // ViewModel 인스턴스
     val viewModel = remember { SpinningWheelViewModel() }
 
@@ -104,6 +114,24 @@ fun SpinningWheelGameScreen(
             vibrationProvider.vibrateShort()
         }
         previousSelectedParticipant = selectedParticipant
+    }
+
+    // Try to show a consent popup
+    ConsentPopup(
+        consent = consent,
+        onFailure = { Log.e("App", "failure:${it.message}")}
+    )
+
+    // 광고 배너
+    if (showInterstitialAd && consent.canRequestAds) {
+        InterstitialAd(
+            interstitialAd,
+            onDismissed = {
+                showInterstitialAd = false
+                // 광고가 닫힌 후 편집 화면으로 이동
+                showParticipantEditor = true
+            }
+        )
     }
 
     // 회전 각도 애니메이션
@@ -165,7 +193,17 @@ fun SpinningWheelGameScreen(
 
             GameButton(
                 text = "${strings.editOptions} (${participants.size}${strings.optionCount})",
-                onClick = { showParticipantEditor = true },
+                onClick = {
+                    // 편집 버튼 클릭 시 50% 확률로 광고 표시
+                    val shouldShowAd = Random.nextFloat() < 0.5f // 50% 확률
+
+                    if (shouldShowAd && interstitialAd.state == AdState.READY && consent.canRequestAds) {
+                        showInterstitialAd = true
+                    } else {
+                        // 광고를 표시하지 않거나, 광고가 준비되지 않은 경우 바로 편집 화면으로 이동
+                        showParticipantEditor = true
+                    }
+                },
                 buttonType = GameButtonType.SECONDARY,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -318,7 +356,9 @@ fun ParticipantEditorScreen(
 
         // 선택지 목록
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             itemsIndexed(participants) { index, participant ->

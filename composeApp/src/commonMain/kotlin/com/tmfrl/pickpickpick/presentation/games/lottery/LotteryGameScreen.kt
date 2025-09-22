@@ -31,15 +31,31 @@ import com.tmfrl.pickpickpick.design.strings
 import com.tmfrl.pickpickpick.platform.rememberVibrationProvider
 import androidx.compose.runtime.LaunchedEffect
 import com.tmfrl.pickpickpick.design.LocalizedStrings
+import app.lexilabs.basic.ads.AdState
+import app.lexilabs.basic.ads.DependsOnGoogleMobileAds
+import app.lexilabs.basic.ads.DependsOnGoogleUserMessagingPlatform
+import app.lexilabs.basic.ads.composable.ConsentPopup
+import app.lexilabs.basic.ads.composable.InterstitialAd
+import app.lexilabs.basic.ads.composable.rememberConsent
+import app.lexilabs.basic.ads.composable.rememberInterstitialAd
+import app.lexilabs.basic.logging.Log
+import com.tmfrl.pickpickpick.ContextFactory
+import kotlin.random.Random
 
 /**
  * 뽑기 게임 화면
  */
+@OptIn(DependsOnGoogleUserMessagingPlatform::class, DependsOnGoogleMobileAds::class)
 @Composable
 fun LotteryGameScreen(
+    platformContext: ContextFactory,
     isDarkTheme: Boolean = false,
     isVibrationEnabled: Boolean = true
 ) {
+    val consent by rememberConsent(activity = platformContext.getActivity())
+    val interstitialAd by rememberInterstitialAd(activity = platformContext.getActivity())
+    var showInterstitialAd by remember { mutableStateOf(false) }
+
     val viewModel = remember { LotteryViewModel() }
     val vibrationProvider = rememberVibrationProvider()
 
@@ -58,6 +74,24 @@ fun LotteryGameScreen(
             vibrationProvider.vibrateShort()
         }
         lastOpenedCount = currentOpenedCount
+    }
+
+    // Try to show a consent popup
+    ConsentPopup(
+        consent = consent,
+        onFailure = { Log.e("App", "failure:${it.message}") }
+    )
+
+    // 광고 배너
+    if (showInterstitialAd && consent.canRequestAds) {
+        InterstitialAd(
+            interstitialAd,
+            onDismissed = {
+                showInterstitialAd = false
+                // 광고가 닫힌 후 설정 화면으로 이동
+                showSettings = true
+            }
+        )
     }
 
     val backgroundColor = ThemeColors.background(isDarkTheme)
@@ -118,7 +152,17 @@ fun LotteryGameScreen(
             // 설정 버튼 - 공통 버튼 사용
             GameButton(
                 text = strings.lotterySettings,
-                onClick = { showSettings = true },
+                onClick = {
+                    // 설정 버튼 클릭 시 50% 확률로 광고 표시
+                    val shouldShowAd = Random.nextFloat() < 0.5f // 50% 확률
+
+                    if (shouldShowAd && interstitialAd.state == AdState.READY && consent.canRequestAds) {
+                        showInterstitialAd = true
+                    } else {
+                        // 광고를 표시하지 않거나, 광고가 준비되지 않은 경우 바로 설정 화면으로 이동
+                        showSettings = true
+                    }
+                },
                 buttonType = GameButtonType.SECONDARY,
                 enabled = !isGameStarted,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -174,7 +218,8 @@ fun LotteryGameScreen(
                             LotteryCard(
                                 lottery = lottery,
                                 onClick = { viewModel.selectLottery(lottery.id) },
-                                isDarkTheme = isDarkTheme
+                                isDarkTheme = isDarkTheme,
+                                totalLotteryCount = lotteries.size // 총 뽑기 개수 전달
                             )
                         }
                     }
@@ -199,7 +244,8 @@ fun LotteryGameScreen(
 fun LotteryCard(
     lottery: LotteryItem,
     onClick: () -> Unit,
-    isDarkTheme: Boolean
+    isDarkTheme: Boolean,
+    totalLotteryCount: Int = 20 // 총 뽑기 개수를 매개변수로 추가
 ) {
     // 애니메이션 상태
     val scale by animateFloatAsState(
@@ -207,6 +253,14 @@ fun LotteryCard(
         animationSpec = tween(300),
         label = "scale"
     )
+
+    // 뽑기 개수에 따른 텍스트 크기 조정
+    val textSize = when {
+        totalLotteryCount <= 15 -> 14.sp  // 적은 개수: 큰 텍스트
+        totalLotteryCount <= 20 -> 12.sp  // 중간 개수: 보통 텍스트
+        totalLotteryCount <= 25 -> 11.sp  // 많은 개수: 작은 텍스트
+        else -> 10.sp                     // 매우 많은 개수: 최소 텍스트 (하지만 최소 10sp 보장)
+    }
 
     val backgroundColor = if (lottery.isOpened) {
         when (lottery.prizeType) {
@@ -256,7 +310,7 @@ fun LotteryCard(
 
                 Text(
                     text = lottery.prizeName,
-                    fontSize = 10.sp,
+                    fontSize = textSize, // 동적으로 조정된 텍스트 크기 사용
                     fontWeight = FontWeight.Bold,
                     color = textColor,
                     textAlign = TextAlign.Center,

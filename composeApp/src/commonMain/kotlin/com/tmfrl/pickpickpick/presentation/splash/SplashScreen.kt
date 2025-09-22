@@ -92,15 +92,6 @@ fun SplashScreen(isDarkTheme: Boolean = false) {
                 color = subtitleColor.copy(alpha = alpha * 0.8f),
                 textAlign = TextAlign.Center
             )
-
-            Spacer(modifier = Modifier.height(48.dp))
-
-            // 로딩 인디케이터
-            CircularProgressIndicator(
-                modifier = Modifier.size(32.dp),
-                color = AppColors.Primary.copy(alpha = alpha * 0.7f),
-                strokeWidth = 3.dp
-            )
         }
     }
 }

@@ -9,7 +9,9 @@ import com.tmfrl.pickpickpick.presentation.splash.SplashScreen
 import kotlinx.coroutines.delay
 
 @Composable
-fun App() {
+fun App(
+    platformContext: ContextFactory
+) {
     MaterialTheme {
         // 플랫폼별 저장소에서 테마 상태를 불러오고 관리
         var isDarkTheme by rememberThemeState()
@@ -26,6 +28,7 @@ fun App() {
             SplashScreen(isDarkTheme = isDarkTheme)
         } else {
             MainScreen(
+                platformContext = platformContext,
                 isDarkTheme = isDarkTheme,
                 onThemeChanged = { newTheme ->
                     isDarkTheme = newTheme

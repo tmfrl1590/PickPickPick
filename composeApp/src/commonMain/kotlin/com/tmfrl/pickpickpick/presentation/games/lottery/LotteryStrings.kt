@@ -26,9 +26,9 @@ object LotteryStrings {
     const val BACK_BUTTON = "뒤로가기"
 
     // 기본 상품명
-    const val DEFAULT_FIRST_PRIZE = "스마트폰"
-    const val DEFAULT_SECOND_PRIZE = "태블릿"
-    const val DEFAULT_THIRD_PRIZE = "이어폰"
+    const val DEFAULT_FIRST_PRIZE = "A"
+    const val DEFAULT_SECOND_PRIZE = "B"
+    const val DEFAULT_THIRD_PRIZE = "C"
     const val DEFAULT_NO_PRIZE = "꽝"
 
     // 게임 결과

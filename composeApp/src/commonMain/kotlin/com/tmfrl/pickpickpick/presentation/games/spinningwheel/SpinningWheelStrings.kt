@@ -20,6 +20,6 @@ object SpinningWheelStrings {
     const val MINIMUM_PARTICIPANTS_WARNING = "최소 2개의 선택지가 필요합니다."
 
     // 기본 선택지 이름
-    const val DEFAULT_PARTICIPANT_1 = "중국집"
-    const val DEFAULT_PARTICIPANT_2 = "분식점"
+    const val DEFAULT_PARTICIPANT_1 = "A"
+    const val DEFAULT_PARTICIPANT_2 = "B"
 }

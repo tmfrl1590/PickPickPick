@@ -65,8 +65,8 @@ class LocalizedStrings(private val language: Language) {
     }
 
     val appDescription = when (language) {
-        Language.KOREAN -> "돌림판, 주사위, 가위바위보를\n즐길 수 있는 재미있는 게임 앱"
-        Language.ENGLISH -> "A fun game app where you can enjoy\nSpinning Wheel, Dice, and Rock-Paper-Scissors"
+        Language.KOREAN -> "돌림판, 주사위, 가위바위보, 추억의뽑기를\n즐길 수 있는 재미있는 게임 앱"
+        Language.ENGLISH -> "A fun game app where you can enjoy\nSpinning Wheel, Dice, Rock-Paper-Scissors, and Memory Lottery"
     }
 
     val developer = when (language) {
@@ -179,13 +179,13 @@ class LocalizedStrings(private val language: Language) {
 
     // 돌림판 편집 관련
     val participantsEditTitle = when (language) {
-        Language.KOREAN -> "참가자 편집"
-        Language.ENGLISH -> "Edit Participants"
+        Language.KOREAN -> "선택지 편집"
+        Language.ENGLISH -> "Edit Options"
     }
 
     val newParticipantName = when (language) {
-        Language.KOREAN -> "새 참가자 이름"
-        Language.ENGLISH -> "New Participant Name"
+        Language.KOREAN -> "선택지 추가"
+        Language.ENGLISH -> "Add Option"
     }
 
     val addButton = when (language) {
@@ -199,8 +199,8 @@ class LocalizedStrings(private val language: Language) {
     }
 
     val minimumParticipantsWarning = when (language) {
-        Language.KOREAN -> "최소 2명의 참가자가 필요합니다."
-        Language.ENGLISH -> "At least 2 participants are required."
+        Language.KOREAN -> "최소 2개의 선택지가 필요합니다."
+        Language.ENGLISH -> "At least 2 options are required."
     }
 
     // 가위바위보 게임 관련

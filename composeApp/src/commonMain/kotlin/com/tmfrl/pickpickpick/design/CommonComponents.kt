@@ -3,6 +3,8 @@ package com.tmfrl.pickpickpick.design
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -61,42 +63,45 @@ fun GameButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     buttonType: GameButtonType = GameButtonType.PRIMARY,
-    loading: Boolean = false
+    loading: Boolean = false,
+    isDarkTheme: Boolean = false
 ) {
+    val textColor = if (isDarkTheme) Color.Black else Color.White
+
     val colors = when (buttonType) {
         GameButtonType.PRIMARY -> ButtonDefaults.buttonColors(
             containerColor = AppColors.Primary,
-            contentColor = Color.White,
+            contentColor = textColor,
             disabledContainerColor = AppColors.ButtonDisabled,
-            disabledContentColor = Color.White
+            disabledContentColor = textColor
         )
 
         GameButtonType.SUCCESS -> ButtonDefaults.buttonColors(
             containerColor = AppColors.ButtonSuccess,
-            contentColor = Color.White,
+            contentColor = textColor,
             disabledContainerColor = AppColors.ButtonDisabled,
-            disabledContentColor = Color.White
+            disabledContentColor = textColor
         )
 
         GameButtonType.WARNING -> ButtonDefaults.buttonColors(
             containerColor = AppColors.ButtonWarning,
-            contentColor = Color.White,
+            contentColor = textColor,
             disabledContainerColor = AppColors.ButtonDisabled,
-            disabledContentColor = Color.White
+            disabledContentColor = textColor
         )
 
         GameButtonType.DANGER -> ButtonDefaults.buttonColors(
             containerColor = AppColors.ButtonDanger,
-            contentColor = Color.White,
+            contentColor = textColor,
             disabledContainerColor = AppColors.ButtonDisabled,
-            disabledContentColor = Color.White
+            disabledContentColor = textColor
         )
 
         GameButtonType.SECONDARY -> ButtonDefaults.buttonColors(
             containerColor = AppColors.ButtonSecondary,
-            contentColor = Color.White,
+            contentColor = textColor,
             disabledContainerColor = AppColors.ButtonDisabled,
-            disabledContentColor = Color.White
+            disabledContentColor = textColor
         )
     }
 
@@ -121,21 +126,23 @@ fun GameButton(
             ) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(16.dp),
-                    color = Color.White,
+                    color = textColor,
                     strokeWidth = 2.dp
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = text,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = textColor
                 )
             }
         } else {
             Text(
                 text = text,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = textColor
             )
         }
     }
@@ -254,10 +261,10 @@ fun SettingsHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onBackClick) {
-            Text(
-                text = "←",
-                fontSize = 24.sp,
-                color = AppColors.Primary
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "뒤로가기",
+                tint = AppColors.Primary
             )
         }
 
