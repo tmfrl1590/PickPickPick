@@ -214,19 +214,19 @@ fun GameResultCard(
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
-            modifier = Modifier.padding(20.dp),
+            modifier = Modifier.padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = icon,
-                fontSize = 32.sp
+                fontSize = 24.sp
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = result,
-                fontSize = 24.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = textColor,
                 textAlign = TextAlign.Center

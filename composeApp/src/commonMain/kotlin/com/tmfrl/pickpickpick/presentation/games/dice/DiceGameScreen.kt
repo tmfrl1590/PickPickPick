@@ -262,7 +262,7 @@ fun DiceGameScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // 주사위를 던진 적이 있고 애니메이션이 끝났을 때만 결과 표시
             if (!animating && hasThrown) {
