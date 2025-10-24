@@ -87,7 +87,10 @@ fun SpinningWheelGameScreen(
     isVibrationEnabled: Boolean = true
 ) {
     val consent by rememberConsent(activity = platformContext.getActivity())
-    val interstitialAd by rememberInterstitialAd(activity = platformContext.getActivity())
+    val interstitialAd by rememberInterstitialAd(
+        activity = platformContext.getActivity(),
+        adUnitId = "ca-app-pub-3991873148102758/3446947769"
+    )
     var showInterstitialAd by remember { mutableStateOf(false) }
     // ViewModel 인스턴스
     val viewModel = remember { SpinningWheelViewModel() }
